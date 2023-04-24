@@ -22,4 +22,8 @@
       <Folder Include="Controllers" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\RestAPI.Domain\RestAPI.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
