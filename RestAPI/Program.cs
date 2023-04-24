@@ -1,3 +1,5 @@
+using PuppeteerSharp;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -19,5 +21,9 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+
+using var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync();
+browserFetcher.Dispose();
 
 app.Run();
