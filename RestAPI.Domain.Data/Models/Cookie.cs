@@ -12,8 +12,7 @@ public class Cookie
         
         return Name == cookie.Name;
     }
-
-// -1250476639
+    
     public override int GetHashCode()
     {
         return Name.GetHashCode();
