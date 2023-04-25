@@ -1,5 +1,6 @@
 using PuppeteerSharp;
 using RestAPI.Domain.Data.Models;
+using RestAPI.Domain.Services.ScannerService.Dtos;
 
 namespace RestAPI.Domain.Services.ScannerService;
 
@@ -45,8 +46,8 @@ public class ScannerService : IScannerService
         _websitesToVisit.Remove(url);
         _visitedWebsites.Add(url);
 
-        var foundCookies = await page.Client.SendAsync<List<Cookie>>("Network.getAllCookies");
-        foreach (var foundCookie in foundCookies)
+        var foundCookies = await page.Client.SendAsync<NetworkCookiesDto>("Network.getAllCookies");
+        foreach (var foundCookie in foundCookies.Cookies)
             _capturedCookies.Add(foundCookie);
         
         //TODO: add rules
