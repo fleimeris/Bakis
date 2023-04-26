@@ -1,4 +1,6 @@
+using System.Text.RegularExpressions;
 using PuppeteerSharp;
+using RestAPI.Domain.Data.Enums;
 using RestAPI.Domain.Data.Models;
 using RestAPI.Domain.Services.ScannerService.Dtos;
 
@@ -12,6 +14,13 @@ public class ScannerService : IScannerService
 
     private Uri _websiteUri;
 
+    private readonly IRuleService _ruleService;
+
+    public ScannerService(IRuleService ruleService)
+    {
+        _ruleService = ruleService;
+    }
+
     public async Task<ScanResult> ScanWebsite(string websiteUrl)
     {
         _websiteUri = new Uri(websiteUrl);
@@ -24,6 +33,27 @@ public class ScannerService : IScannerService
 
         await RecursiveCrawl(page, websiteUrl);
 
+        var result = new ScanResult
+        {
+            Cookies = _capturedCookies.ToList()
+        };
+
+        var allRules = _ruleService.GetAll();
+
+        foreach (var auditRule in allRules.Where(x => x.Type == AuditRuleType.Cookie))
+        {
+            foreach (var capturedCookie in _capturedCookies)
+            {
+                if(Regex.Matches(capturedCookie.Name!, auditRule.Identifier!).Count > 0)
+                    result.RulesFound.Add(new RulesFound
+                    {
+                        Cookie = capturedCookie,
+                        Rule = auditRule,
+                        RuleId = auditRule.Id
+                    });
+            }
+        }
+        
         return new ScanResult
         {
             Cookies = _capturedCookies.ToList()
