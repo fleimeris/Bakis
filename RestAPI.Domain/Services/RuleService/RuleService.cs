@@ -7,6 +7,17 @@ public class RuleService : IRuleService
 {
     private readonly List<AuditRule> _data = new();
 
+    public RuleService()
+    {
+        _data.Add(new AuditRule
+        {
+            Id = Guid.NewGuid(),
+            Identifier = "language",
+            OnSuccess = "Found marketing cookies",
+            Type = AuditRuleType.Cookie
+        });
+    }
+
     public Guid Insert(string identifier, AuditRuleType type, string? onSuccess = null, string? onFailed = null)
     {
         var id = Guid.NewGuid();

@@ -49,15 +49,16 @@ public class ScannerService : IScannerService
                     {
                         Cookie = capturedCookie,
                         Rule = auditRule,
-                        RuleId = auditRule.Id
+                        RuleId = auditRule.Id,
+                        Type = AuditRuleType.Cookie
                     });
             }
         }
-        
-        return new ScanResult
-        {
-            Cookies = _capturedCookies.ToList()
-        };
+
+        await page.DisposeAsync();
+        await browser.DisposeAsync();
+
+        return result;
     }
 
     private async Task RecursiveCrawl(IPage page, string url)
@@ -90,7 +91,7 @@ public class ScannerService : IScannerService
         var newUrlsToVisit = await GetAllPageUrls(page);
 
         foreach (var urlToVisit in newUrlsToVisit)
-            await ScanWebsite(urlToVisit);
+            await RecursiveCrawl(page, urlToVisit);
     }
 
     private async Task<List<string>> GetAllPageUrls(IPage page)
