@@ -12,7 +12,7 @@ public class ScannerService : IScannerService
 
     private Uri _websiteUri;
 
-    public async Task ScanWebsite(string websiteUrl)
+    public async Task<ScanResult> ScanWebsite(string websiteUrl)
     {
         _websiteUri = new Uri(websiteUrl);
         
@@ -23,6 +23,11 @@ public class ScannerService : IScannerService
         await using var page = await browser.NewPageAsync();
 
         await RecursiveCrawl(page, websiteUrl);
+
+        return new ScanResult
+        {
+            Cookies = _capturedCookies.ToList()
+        };
     }
 
     private async Task RecursiveCrawl(IPage page, string url)
