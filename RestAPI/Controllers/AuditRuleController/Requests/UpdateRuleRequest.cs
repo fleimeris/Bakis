@@ -1,12 +1,10 @@
 using RestAPI.Domain.Data.Enums;
 
-namespace RestAPI.Domain.Data.Models;
+namespace RestAPI.Controllers.AuditRuleController.Requests;
 
-public class AuditRule
+public class UpdateRuleRequest
 {
-    public Guid Id { get; set; }
     public string? Identifier { get; set; }
-    public AuditRuleType Type { get; set; }
     public string? OnSuccess { get; set; }
     public string? OnFailed { get; set; }
 }

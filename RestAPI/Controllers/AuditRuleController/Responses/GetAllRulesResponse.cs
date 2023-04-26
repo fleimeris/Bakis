@@ -1,8 +1,8 @@
 using RestAPI.Domain.Data.Enums;
 
-namespace RestAPI.Domain.Data.Models;
+namespace RestAPI.Controllers.AuditRuleController.Responses;
 
-public class AuditRule
+public class GetAllRulesResponse
 {
     public Guid Id { get; set; }
     public string? Identifier { get; set; }
