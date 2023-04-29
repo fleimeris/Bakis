@@ -11,6 +11,7 @@ public class ScannerService : IScannerService
     private readonly HashSet<string> _websitesToVisit = new();
     private readonly HashSet<string> _visitedWebsites = new();
     private readonly HashSet<Cookie> _capturedCookies = new();
+    private readonly ScanResult _scanResult = new();
 
     private Uri _websiteUri;
 
@@ -30,22 +31,31 @@ public class ScannerService : IScannerService
             new LaunchOptions { Headless = true });
 
         await using var page = await browser.NewPageAsync();
+        
+        var allRules = _ruleService.GetAll();
+        
+        foreach (var auditRule in allRules.Where(x => x.Type == AuditRuleType.Element))
+            _scanResult.RulesFound.Add(new RulesFound
+            {
+                Type = AuditRuleType.Element,
+                RuleId = auditRule.Id,
+                Rule = auditRule,
+                Found = false
+            });
 
         await RecursiveCrawl(page, websiteUrl);
 
-        var result = new ScanResult
-        {
-            Cookies = _capturedCookies.ToList()
-        };
+        await page.DisposeAsync();
+        await browser.DisposeAsync();
 
-        var allRules = _ruleService.GetAll();
+        _scanResult.Cookies = _capturedCookies.ToList();
 
         foreach (var auditRule in allRules.Where(x => x.Type == AuditRuleType.Cookie))
         {
             foreach (var capturedCookie in _capturedCookies)
             {
                 if(Regex.Matches(capturedCookie.Name!, auditRule.Identifier!).Count > 0)
-                    result.RulesFound.Add(new RulesFound
+                    _scanResult.RulesFound.Add(new RulesFound
                     {
                         Cookie = capturedCookie,
                         Rule = auditRule,
@@ -55,10 +65,7 @@ public class ScannerService : IScannerService
             }
         }
 
-        await page.DisposeAsync();
-        await browser.DisposeAsync();
-
-        return result;
+        return _scanResult;
     }
 
     private async Task RecursiveCrawl(IPage page, string url)
@@ -85,8 +92,14 @@ public class ScannerService : IScannerService
         var foundCookies = await page.Client.SendAsync<NetworkCookiesDto>("Network.getAllCookies");
         foreach (var foundCookie in foundCookies.Cookies)
             _capturedCookies.Add(foundCookie);
-        
-        //TODO: add rules
+
+        foreach (var rulesFound in _scanResult.RulesFound.Where(x => x.Type == AuditRuleType.Element))
+        {
+            var elements = await page.XPathAsync(rulesFound.Rule!.Identifier);
+
+            if (elements is { Length: > 0 })
+                rulesFound.Found = true;
+        }
 
         var newUrlsToVisit = await GetAllPageUrls(page);
 

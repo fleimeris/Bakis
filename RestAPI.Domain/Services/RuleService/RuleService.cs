@@ -16,6 +16,14 @@ public class RuleService : IRuleService
             OnSuccess = "Found marketing cookies",
             Type = AuditRuleType.Cookie
         });
+        _data.Add(new AuditRule
+        {
+            Id = Guid.NewGuid(),
+            Identifier = "/html/body/app-root/div/app-window-view/div/app-cookie-consent",
+            Type = AuditRuleType.Element,
+            OnSuccess = "Cookie juosta rasta",
+            OnFailed = "Cookie juosta nerasta"
+        });
     }
 
     public Guid Insert(string identifier, AuditRuleType type, string? onSuccess = null, string? onFailed = null)

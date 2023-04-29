@@ -8,4 +8,5 @@ public class RulesFound
     public AuditRule? Rule { get; set; }
     public Cookie? Cookie { get; set; }
     public AuditRuleType Type { get; set; }
+    public bool Found { get; set; }
 }
