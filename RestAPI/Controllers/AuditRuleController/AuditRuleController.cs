@@ -17,7 +17,7 @@ public class AuditRuleController : BaseController
     [HttpPut]
     public IActionResult InsertRule([FromBody] InsertRuleRequest request)
     {
-        _ruleService.Insert(request.Identifier!, request.Type, request.OnSuccess, request.OnFailed);
+        _ruleService.Insert(request.Identifier!, request.Type!.Value, request.OnSuccess, request.OnFailed);
         
         return new OkResult();
     }

@@ -1,4 +1,8 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using PuppeteerSharp;
+using RestAPI.Controllers.AuditRuleController.Requests;
+using RestAPI.Controllers.ScanController.Requests;
 using RestAPI.Domain.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +11,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDomain();
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation(configuration =>
+{
+    configuration.DisableDataAnnotationsValidation = true;
+});
+
+builder.Services.AddScoped<IValidator<InsertRuleRequest>, InsertRuleRequestValidator>();
+builder.Services.AddScoped<IValidator<UpdateRuleRequest>, UpdateRuleRequestValidator>();
+builder.Services.AddScoped<IValidator<ScanWebsiteRequest>, ScanWebsiteRequestValidator>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
