@@ -2,3 +2,19 @@
 
 <PageTitle>Scan a website</PageTitle>
 
+<EditForm Model="@_request" OnValidSubmit="OnSuccessValidation">
+    <DataAnnotationsValidator/>
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Website URL" HelperText="https://google.com"
+                                  @bind-Value="_request.WebsiteUrl" For="@(() => _request.WebsiteUrl)"/>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Scan website</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
