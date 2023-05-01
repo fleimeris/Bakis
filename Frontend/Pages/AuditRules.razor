@@ -2,7 +2,7 @@
 
 <MudButton Color="Color.Success" Variant="Variant.Filled" @onclick="OnCreateButton">Create new rule</MudButton>
 
-<MudDataGrid Items="@_auditRules" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+<MudDataGrid T="RestAPI.Domain.Data.Models.AuditRule" Items="@_auditRules" Filterable="false" SortMode="@SortMode.None" Groupable="false">
     <Columns>
         <PropertyColumn Property="x => x.Identifier" />
         <PropertyColumn Property="x => x.Type" />
@@ -12,25 +12,9 @@
             <CellTemplate>
                 <MudStack Row>
                     <MudIconButton Color="Color.Info" Icon="@Icons.Material.Filled.Edit"/>
-                    <MudIconButton Color="Color.Error" Icon="@Icons.Material.Filled.Delete"/>
+                    <MudIconButton Color="Color.Error" Icon="@Icons.Material.Filled.Delete" OnClick="() => Delete(context.Item)"/>
                 </MudStack>
             </CellTemplate>
         </TemplateColumn>
     </Columns>
 </MudDataGrid>
-
-
-
-@*<MudStack>
-    @foreach (var rule in _auditRules)
-    {
-        <MudPaper>
-            <MudStack Row="true" >
-                <MudText Typo="Typo.body1">Identifier: @rule.Identifier</MudText>
-                <MudText Typo="Typo.body1">Type: @rule.Type.ToString()</MudText>
-                <MudText Typo="Typo.body1">On success text: @rule.OnSuccess</MudText>
-                <MudText Typo="Typo.body1">On failed text: @rule.OnFailed</MudText>
-            </MudStack>
-        </MudPaper>
-    }
-</MudStack>*@

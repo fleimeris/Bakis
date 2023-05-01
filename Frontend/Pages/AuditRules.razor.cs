@@ -58,4 +58,36 @@ public partial class AuditRules
             _snackbar.Add($"Failed to receive all audit rules: {e}", Severity.Error);
         }
     }
+
+    private async Task Delete(RestAPI.Domain.Data.Models.AuditRule rule)
+    {
+        var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        httpClient.Timeout = TimeSpan.FromHours(1);
+
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"http://localhost:5254/api/v1/AuditRule/{rule.Id}");
+
+        try
+        {
+            var result = await httpClient.SendAsync(request);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                _snackbar.Add("Failed to delete audit rule", Severity.Error);
+                return;
+            }
+            
+            _snackbar.Add("Audit rule was deleted", Severity.Success);
+            _auditRules.Remove(rule);
+        }
+        catch (Exception e)
+        {
+            _snackbar.Add($"Failed to delete audit rule: {e}", Severity.Error);
+        }
+    }
+    
+    private async Task Update(RestAPI.Domain.Data.Models.AuditRule rule)
+    {
+        
+    }
 }
