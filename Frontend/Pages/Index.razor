@@ -1,20 +1,59 @@
 ﻿@page "/"
+@using RestAPI.Domain.Data.Enums
 
 <PageTitle>Scan a website</PageTitle>
 
 <EditForm Model="@_request" OnValidSubmit="OnSuccessValidation">
     <DataAnnotationsValidator/>
     <MudGrid>
-        <MudItem xs="12" sm="7">
+        <MudItem xs="12" sm="12">
             <MudCard>
                 <MudCardContent>
-                    <MudTextField Label="Website URL" HelperText="https://google.com"
+                    <MudTextField Label="Website URL" HelperText="Eg.: https://google.com"
                                   @bind-Value="_request.WebsiteUrl" For="@(() => _request.WebsiteUrl)"/>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Scan website</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" @onclick="Reset">Reset</MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>
     </MudGrid>
 </EditForm>
+
+@if (_hasData)
+{
+    <MudExpansionPanels>
+        <MudExpansionPanel Text="Cookies found">
+            @foreach (var cookie in _scanResult.Cookies)
+            {
+                <MudText Typo="Typo.body1">@cookie.Name @cookie.Domain</MudText>
+                @if (_scanResult.RulesFound.Any(x => x.Cookie != null && x.Cookie.Name == cookie.Name))
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Block" Color="Color.Error" Title="Cookie is not allowed"/>
+                }
+                else
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" Title="Cookie is allowed"/>
+                }
+                <MudDivider />
+            }
+        </MudExpansionPanel>
+        <MudExpansionPanel Text="Rules found">
+            @foreach (var foundRule in _scanResult.RulesFound.Where(x => x.Type == AuditRuleType.Element))
+            {
+                if (foundRule.Found)
+                {
+                    <MudText Typo="Typo.body1">@foundRule.Rule.OnSuccess</MudText><br/>
+                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" Title="Banner was found"/>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body1">@foundRule.Rule.OnFailed</MudText><br/>
+                    <MudIcon Icon="@Icons.Material.Filled.Block" Color="Color.Error" Title="Banner was not found"/>
+                }
+                <MudDivider />
+            }
+        </MudExpansionPanel>
+    </MudExpansionPanels>
+}

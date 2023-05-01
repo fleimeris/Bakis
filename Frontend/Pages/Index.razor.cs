@@ -4,9 +4,9 @@ using System.Text;
 using Frontend.CustomValidators;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using MudBlazor;
 using Newtonsoft.Json;
+using RestAPI.Domain.Data.Models;
 
 namespace Frontend.Pages;
 
@@ -23,17 +23,21 @@ public partial class Index
     
     private ScanWebsiteRequest _request = new();
 
+    private bool _hasData = false;
+    private ScanResult? _scanResult;
+
     private async Task OnSuccessValidation(EditContext context)
     {
         var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
         var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5254/api/v1/Scan");
-        //request.SetBrowserRequestMode(BrowserRequestMode.NoCors);
         request.Content = new StringContent(JsonConvert.SerializeObject(_request), Encoding.UTF8, "application/json");
 
         try
         {
+            _snackbar.Add("Website is scanning.", Severity.Info);
+            
             var response = await httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
@@ -43,6 +47,9 @@ public partial class Index
             }
 
             var responseBody = await response.Content.ReadAsStringAsync();
+            _scanResult = JsonConvert.DeserializeObject<ScanResult>(responseBody);
+            _hasData = true;
+            await InvokeAsync(StateHasChanged);
             
             Console.WriteLine(responseBody);
         }
@@ -51,5 +58,12 @@ public partial class Index
             _snackbar.Add($"Error while sending request to the server: {e}", Severity.Error);
             Console.WriteLine(e);
         }
+    }
+
+    private async Task Reset()
+    {
+        _hasData = false;
+        _scanResult = null;
+        await InvokeAsync(StateHasChanged);
     }
 }

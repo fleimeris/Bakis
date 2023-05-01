@@ -21,8 +21,16 @@ public class RuleService : IRuleService
             Id = Guid.NewGuid(),
             Identifier = "/html/body/app-root/div/app-window-view/div/app-cookie-consent",
             Type = AuditRuleType.Element,
-            OnSuccess = "Cookie juosta rasta",
-            OnFailed = "Cookie juosta nerasta"
+            OnSuccess = "Privacypartners cookie banner was found",
+            OnFailed = "Privacypartners cookie banner was not found"
+        });
+        _data.Add(new AuditRule
+        {
+            Id = Guid.NewGuid(),
+            Identifier = "//*[@id=\"onetrust-consent-sdk\"]",
+            Type = AuditRuleType.Element,
+            OnSuccess = "Onetrust cookie banner was found",
+            OnFailed = "Onetrust cookie banner was not found"
         });
     }
 

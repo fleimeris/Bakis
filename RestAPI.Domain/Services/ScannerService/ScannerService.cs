@@ -70,7 +70,7 @@ public class ScannerService : IScannerService
 
     private async Task RecursiveCrawl(IPage page, string url)
     {
-        if (_visitedWebsites.Contains(url) || _visitedWebsites.Count > 50)
+        if (_visitedWebsites.Contains(url) || _visitedWebsites.Count > 10)
             return;
 
         try
@@ -85,6 +85,8 @@ public class ScannerService : IScannerService
         {
             // ignore
         }
+
+        await page.WaitForTimeoutAsync(3000);
 
         _websitesToVisit.Remove(url);
         _visitedWebsites.Add(url);
