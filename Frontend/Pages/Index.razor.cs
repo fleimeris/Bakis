@@ -4,6 +4,7 @@ using System.Text;
 using Frontend.CustomValidators;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
 using MudBlazor;
 using Newtonsoft.Json;
 using RestAPI.Domain.Data.Models;
@@ -20,16 +21,19 @@ public class ScanWebsiteRequest
 public partial class Index
 {
     [Inject] private ISnackbar _snackbar { get; set; }
+    [Inject] private IJSRuntime _jsRuntime { get; set; }
     
     private ScanWebsiteRequest _request = new();
 
     private bool _hasData = false;
     private ScanResult? _scanResult;
+    private string? _scanResultJson;
 
     private async Task OnSuccessValidation(EditContext context)
     {
         var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        httpClient.Timeout = TimeSpan.FromHours(1);
 
         var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5254/api/v1/Scan");
         request.Content = new StringContent(JsonConvert.SerializeObject(_request), Encoding.UTF8, "application/json");
@@ -46,12 +50,10 @@ public partial class Index
                 return;
             }
 
-            var responseBody = await response.Content.ReadAsStringAsync();
-            _scanResult = JsonConvert.DeserializeObject<ScanResult>(responseBody);
+            _scanResultJson = await response.Content.ReadAsStringAsync();
+            _scanResult = JsonConvert.DeserializeObject<ScanResult>(_scanResultJson);
             _hasData = true;
             await InvokeAsync(StateHasChanged);
-            
-            Console.WriteLine(responseBody);
         }
         catch (Exception e)
         {
@@ -64,6 +66,41 @@ public partial class Index
     {
         _hasData = false;
         _scanResult = null;
+        _scanResultJson = null;
         await InvokeAsync(StateHasChanged);
+    }
+    
+    private async Task DownloadCsv()
+    {
+        var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        httpClient.Timeout = TimeSpan.FromHours(1);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5254/api/v1/Download?what=0");
+        request.Content = new StringContent(JsonConvert.SerializeObject(_scanResult), Encoding.UTF8, "application/json");
+
+        try
+        {
+            var response = await httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return;
+            }
+
+            var responseBytes = await response.Content.ReadAsByteArrayAsync();
+
+            await _jsRuntime.InvokeVoidAsync("saveAsFile", "report.csv", "text/csv", responseBytes);
+        }
+        catch (Exception e)
+        {
+            _snackbar.Add($"Failed to download file: {e}");
+        }
+    }
+
+    private async Task DownloadJson()
+    {
+        await _jsRuntime.InvokeVoidAsync("saveAsFile", "report.csv", "application/json",
+            Encoding.UTF8.GetBytes(_scanResultJson));
     }
 }

@@ -23,6 +23,8 @@
 
 @if (_hasData)
 {
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Download" Color="Color.Info" @onclick="DownloadCsv">Download CSV</MudButton>
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Download" Color="Color.Info" @onclick="DownloadJson">Download JSON</MudButton>
     <MudExpansionPanels>
         <MudExpansionPanel Text="Cookies found">
             @foreach (var cookie in _scanResult.Cookies)

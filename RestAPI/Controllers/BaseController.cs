@@ -4,7 +4,7 @@ namespace RestAPI.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class BaseController
+public class BaseController : ControllerBase
 {
     
 }
