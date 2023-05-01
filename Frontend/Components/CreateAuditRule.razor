@@ -1,0 +1,93 @@
+@using RestAPI.Domain.Data.Enums
+@using System.ComponentModel.DataAnnotations
+@using System.Net.Http.Headers
+@using System.Text
+@using Newtonsoft.Json
+<MudDialog>
+    <DialogContent>
+        <EditForm Model="@_request" OnValidSubmit="OnSuccessValidation">
+            <DataAnnotationsValidator/>
+            <MudGrid>
+                <MudItem xs="12" sm="12">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudTextField Label="Identifier" HelperText="Cookie or web element (xpath) identifier"
+                                          @bind-Value="_request.Identifier" For="@(() => _request.Identifier)"/>
+                            <MudSelect T="AuditRuleType" Label="Type" Variant="Variant.Outlined" @bind-Value="_request.Type"
+                                       For="() => _request.Type">
+                                <MudSelectItem T="AuditRuleType" Value="AuditRuleType.Cookie">Cookie</MudSelectItem>
+                                <MudSelectItem T="AuditRuleType" Value="AuditRuleType.Element">Element</MudSelectItem>
+                            </MudSelect>
+                            <MudTextField Label="On success message" HelperText="Message that is displayed whenever cookie or element is found"
+                                          @bind-Value="_request.OnSuccess" For="@(() => _request.OnSuccess)"/>
+                            <MudTextField Label="On failed message" HelperText="Message that is displayed whenever cookie or element was not found"
+                                          @bind-Value="_request.OnFailed" For="@(() => _request.OnFailed)"/>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Class="ml-auto" OnClick="Cancel">Cancel</MudButton>
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto">Create rule</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </DialogContent>
+</MudDialog>
+
+@code
+{
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    [Inject] private ISnackbar _snackbar { get; set; }
+
+    public class CreateAuditRuleDto
+    {
+        [Required]
+        [MinLength(1, ErrorMessage = "Identifier cannot be empty")]
+        public string? Identifier { get; set; }
+        
+        [Required]
+        public AuditRuleType Type { get; set; }
+        
+        [Required]
+        [MinLength(1, ErrorMessage = "On success message cannot be empty")]
+        public string? OnSuccess { get; set; }
+        
+        [Required]
+        [MinLength(1, ErrorMessage = "On failed message cannot be empty")]
+        public string? OnFailed { get; set; }
+    }
+
+    private readonly CreateAuditRuleDto _request = new();
+
+    private async Task OnSuccessValidation(EditContext context)
+    {
+        var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        httpClient.Timeout = TimeSpan.FromHours(1);
+
+        var request = new HttpRequestMessage(HttpMethod.Put, "http://localhost:5254/api/v1/AuditRule");
+        request.Content = new StringContent(JsonConvert.SerializeObject(_request), Encoding.UTF8, "application/json");
+
+        try
+        {
+            var result = await httpClient.SendAsync(request);
+
+            if (result.IsSuccessStatusCode)
+                _snackbar.Add("Rule was created successfully", Severity.Success);
+            else
+                _snackbar.Add("Error occurred while creating rule", Severity.Error);
+        }
+        catch (Exception e)
+        {
+            _snackbar.Add($"Error occurred while creating rule: {e}", Severity.Error);
+        }
+        
+        MudDialog.Close(true);
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Close(false);
+    }
+}
