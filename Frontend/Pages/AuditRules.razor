@@ -1,5 +1,7 @@
 @page "/auditrules"
 
+<PageTitle>Scan rules</PageTitle>
+
 <MudButton Color="Color.Success" Variant="Variant.Filled" @onclick="OnCreateButton">Create new rule</MudButton>
 
 <MudDataGrid T="RestAPI.Domain.Data.Models.AuditRule" Items="@_auditRules" Filterable="false" SortMode="@SortMode.None" Groupable="false" >
