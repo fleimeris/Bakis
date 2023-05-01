@@ -88,6 +88,19 @@ public partial class AuditRules
     
     private async Task Update(RestAPI.Domain.Data.Models.AuditRule rule)
     {
-        
+        var parameters = new DialogParameters
+        {
+            ["_request"]=new UpdateAuditRule.UpdateAuditRuleDto
+            {
+                Identifier = rule.Identifier,
+                OnFailed = rule.OnFailed,
+                OnSuccess = rule.OnSuccess
+            },
+            ["_ruleId"]=rule.Id
+        };
+
+        var result = await _dialogService.ShowAsync<UpdateAuditRule>("Update audit rule", parameters);
+        await result.Result;
+        await RefreshRules();
     }
 }

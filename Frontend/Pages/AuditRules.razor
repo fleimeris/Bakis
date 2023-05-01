@@ -2,7 +2,7 @@
 
 <MudButton Color="Color.Success" Variant="Variant.Filled" @onclick="OnCreateButton">Create new rule</MudButton>
 
-<MudDataGrid T="RestAPI.Domain.Data.Models.AuditRule" Items="@_auditRules" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+<MudDataGrid T="RestAPI.Domain.Data.Models.AuditRule" Items="@_auditRules" Filterable="false" SortMode="@SortMode.None" Groupable="false" >
     <Columns>
         <PropertyColumn Property="x => x.Identifier" />
         <PropertyColumn Property="x => x.Type" />
@@ -11,7 +11,7 @@
         <TemplateColumn CellClass="d-flex justify-end">
             <CellTemplate>
                 <MudStack Row>
-                    <MudIconButton Color="Color.Info" Icon="@Icons.Material.Filled.Edit"/>
+                    <MudIconButton Color="Color.Info" Icon="@Icons.Material.Filled.Edit" OnClick="() => Update(context.Item)"/>
                     <MudIconButton Color="Color.Error" Icon="@Icons.Material.Filled.Delete" OnClick="() => Delete(context.Item)"/>
                 </MudStack>
             </CellTemplate>
