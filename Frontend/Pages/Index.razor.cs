@@ -100,7 +100,7 @@ public partial class Index
 
     private async Task DownloadJson()
     {
-        await _jsRuntime.InvokeVoidAsync("saveAsFile", "report.csv", "application/json",
+        await _jsRuntime.InvokeVoidAsync("saveAsFile", "report.json", "application/json",
             Encoding.UTF8.GetBytes(_scanResultJson));
     }
 }
