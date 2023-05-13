@@ -93,7 +93,6 @@ public partial class AuditRules
             ["_request"]=new UpdateAuditRule.UpdateAuditRuleDto
             {
                 Identifier = rule.Identifier,
-                OnFailed = rule.OnFailed,
                 OnSuccess = rule.OnSuccess
             },
             ["_ruleId"]=rule.Id

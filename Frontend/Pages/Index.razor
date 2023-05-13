@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using RestAPI.Domain.Data.Enums
 
 <PageTitle>Scan a website</PageTitle>
 
@@ -41,7 +40,7 @@
                 <MudDivider />
             }
         </MudExpansionPanel>
-        <MudExpansionPanel Text="Rules found">
+        @*<MudExpansionPanel Text="Rules found">
             @foreach (var foundRule in _scanResult.RulesFound.Where(x => x.Type == AuditRuleType.Element))
             {
                 if (foundRule.Found)
@@ -56,6 +55,6 @@
                 }
                 <MudDivider />
             }
-        </MudExpansionPanel>
+        </MudExpansionPanel>*@
     </MudExpansionPanels>
 }

@@ -1,6 +1,5 @@
 using System.Text.RegularExpressions;
 using PuppeteerSharp;
-using RestAPI.Domain.Data.Enums;
 using RestAPI.Domain.Data.Models;
 using RestAPI.Domain.Services.ScannerService.Dtos;
 
@@ -33,15 +32,6 @@ public class ScannerService : IScannerService
         await using var page = await browser.NewPageAsync();
         
         var allRules = _ruleService.GetAll();
-        
-        foreach (var auditRule in allRules.Where(x => x.Type == AuditRuleType.Element))
-            _scanResult.RulesFound.Add(new RulesFound
-            {
-                Type = AuditRuleType.Element,
-                RuleId = auditRule.Id,
-                Rule = auditRule,
-                Found = false
-            });
 
         await RecursiveCrawl(page, websiteUrl);
 
@@ -50,7 +40,7 @@ public class ScannerService : IScannerService
 
         _scanResult.Cookies = _capturedCookies.ToList();
 
-        foreach (var auditRule in allRules.Where(x => x.Type == AuditRuleType.Cookie))
+        foreach (var auditRule in allRules)
         {
             foreach (var capturedCookie in _capturedCookies)
             {
@@ -60,7 +50,6 @@ public class ScannerService : IScannerService
                         Cookie = capturedCookie,
                         Rule = auditRule,
                         RuleId = auditRule.Id,
-                        Type = AuditRuleType.Cookie
                     });
             }
         }
@@ -70,7 +59,7 @@ public class ScannerService : IScannerService
 
     private async Task RecursiveCrawl(IPage page, string url)
     {
-        if (_visitedWebsites.Contains(url) || _visitedWebsites.Count > 10)
+        if (_visitedWebsites.Contains(url) || _visitedWebsites.Count > 25)
             return;
 
         try
@@ -94,14 +83,6 @@ public class ScannerService : IScannerService
         var foundCookies = await page.Client.SendAsync<NetworkCookiesDto>("Network.getAllCookies");
         foreach (var foundCookie in foundCookies.Cookies)
             _capturedCookies.Add(foundCookie);
-
-        foreach (var rulesFound in _scanResult.RulesFound.Where(x => x.Type == AuditRuleType.Element))
-        {
-            var elements = await page.XPathAsync(rulesFound.Rule!.Identifier);
-
-            if (elements is { Length: > 0 })
-                rulesFound.Found = true;
-        }
 
         var newUrlsToVisit = await GetAllPageUrls(page);
 

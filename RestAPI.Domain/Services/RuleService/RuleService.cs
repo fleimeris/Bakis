@@ -1,4 +1,3 @@
-using RestAPI.Domain.Data.Enums;
 using RestAPI.Domain.Data.Models;
 
 namespace RestAPI.Domain.Services.RuleService;
@@ -14,35 +13,22 @@ public class RuleService : IRuleService
             Id = Guid.NewGuid(),
             Identifier = "language",
             OnSuccess = "Found marketing cookies",
-            Type = AuditRuleType.Cookie
         });
         _data.Add(new AuditRule
         {
             Id = Guid.NewGuid(),
             Identifier = "/html/body/app-root/div/app-window-view/div/app-cookie-consent",
-            Type = AuditRuleType.Element,
             OnSuccess = "Privacypartners cookie banner was found",
-            OnFailed = "Privacypartners cookie banner was not found"
-        });
-        _data.Add(new AuditRule
-        {
-            Id = Guid.NewGuid(),
-            Identifier = "//*[@id=\"onetrust-consent-sdk\"]",
-            Type = AuditRuleType.Element,
-            OnSuccess = "Onetrust cookie banner was found",
-            OnFailed = "Onetrust cookie banner was not found"
         });
     }
 
-    public Guid Insert(string identifier, AuditRuleType type, string? onSuccess = null, string? onFailed = null)
+    public Guid Insert(string identifier, string? onSuccess = null)
     {
         var id = Guid.NewGuid();
         var data = new AuditRule
         {
             Id = id,
             Identifier = identifier,
-            Type = type,
-            OnFailed = onFailed,
             OnSuccess = onSuccess
         };
         
@@ -69,8 +55,7 @@ public class RuleService : IRuleService
         return _data;
     }
     
-    public void Update(Guid ruleId, string identifier, string? onSuccess = null,
-        string? onFailed = null)
+    public void Update(Guid ruleId, string identifier, string? onSuccess = null)
     {
         var value = _data.FirstOrDefault(x => x.Id == ruleId);
         
@@ -79,6 +64,5 @@ public class RuleService : IRuleService
         
         value.Identifier = identifier;
         value.OnSuccess = onSuccess;
-        value.OnFailed = onFailed;
     }
 }

@@ -17,7 +17,7 @@ public class AuditRuleController : BaseController
     [HttpPut]
     public IActionResult InsertRule([FromBody] InsertRuleRequest request)
     {
-        _ruleService.Insert(request.Identifier!, request.Type!.Value, request.OnSuccess, request.OnFailed);
+        _ruleService.Insert(request.Identifier!, request.OnSuccess);
         
         return new OkResult();
     }
@@ -44,9 +44,7 @@ public class AuditRuleController : BaseController
         {
             Id = x.Id,
             Identifier = x.Identifier,
-            OnSuccess = x.OnSuccess,
-            OnFailed = x.OnFailed,
-            Type = x.Type
+            OnSuccess = x.OnSuccess
         }));
     }
 
@@ -58,7 +56,7 @@ public class AuditRuleController : BaseController
         if (rule == null)
             return new NotFoundResult();
 
-        _ruleService.Update(ruleId, request.Identifier!, request.OnSuccess, request.OnFailed);
+        _ruleService.Update(ruleId, request.Identifier!, request.OnSuccess);
 
         return new OkResult();
     }

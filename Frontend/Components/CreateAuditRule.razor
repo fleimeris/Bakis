@@ -1,4 +1,3 @@
-@using RestAPI.Domain.Data.Enums
 @using System.ComponentModel.DataAnnotations
 @using System.Net.Http.Headers
 @using System.Text
@@ -11,17 +10,10 @@
                 <MudItem xs="12" sm="12">
                     <MudCard>
                         <MudCardContent>
-                            <MudTextField Label="Identifier" HelperText="Cookie or web element (xpath) identifier"
+                            <MudTextField Label="Identifier" HelperText="Cookie name (regex is enabled)"
                                           @bind-Value="_request.Identifier" For="@(() => _request.Identifier)"/>
-                            <MudSelect T="AuditRuleType" Label="Type" Variant="Variant.Outlined" @bind-Value="_request.Type"
-                                       For="() => _request.Type">
-                                <MudSelectItem T="AuditRuleType" Value="AuditRuleType.Cookie">Cookie</MudSelectItem>
-                                <MudSelectItem T="AuditRuleType" Value="AuditRuleType.Element">Element</MudSelectItem>
-                            </MudSelect>
-                            <MudTextField Label="On success message" HelperText="Message that is displayed whenever cookie or element is found"
+                            <MudTextField Label="On success message" HelperText="Message that is displayed whenever cookie is found"
                                           @bind-Value="_request.OnSuccess" For="@(() => _request.OnSuccess)"/>
-                            <MudTextField Label="On failed message" HelperText="Message that is displayed whenever cookie or element was not found"
-                                          @bind-Value="_request.OnFailed" For="@(() => _request.OnFailed)"/>
                         </MudCardContent>
                         <MudCardActions>
                             <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Class="ml-auto" OnClick="Cancel">Cancel</MudButton>
@@ -45,17 +37,10 @@
         [Required]
         [MinLength(1, ErrorMessage = "Identifier cannot be empty")]
         public string? Identifier { get; set; }
-        
-        [Required]
-        public AuditRuleType Type { get; set; }
-        
+
         [Required]
         [MinLength(1, ErrorMessage = "On success message cannot be empty")]
         public string? OnSuccess { get; set; }
-        
-        [Required]
-        [MinLength(1, ErrorMessage = "On failed message cannot be empty")]
-        public string? OnFailed { get; set; }
     }
 
     private readonly CreateAuditRuleDto _request = new();

@@ -15,8 +15,6 @@
                                           @bind-Value="_request.Identifier" For="@(() => _request.Identifier)"/>
                             <MudTextField Label="On success message" HelperText="Message that is displayed whenever cookie or element is found"
                                           @bind-Value="_request.OnSuccess" For="@(() => _request.OnSuccess)"/>
-                            <MudTextField Label="On failed message" HelperText="Message that is displayed whenever cookie or element was not found"
-                                          @bind-Value="_request.OnFailed" For="@(() => _request.OnFailed)"/>
                         </MudCardContent>
                         <MudCardActions>
                             <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Class="ml-auto" OnClick="Cancel">Cancel</MudButton>
@@ -44,10 +42,6 @@
         [Required]
         [MinLength(1, ErrorMessage = "On success message cannot be empty")]
         public string? OnSuccess { get; set; }
-        
-        [Required]
-        [MinLength(1, ErrorMessage = "On failed message cannot be empty")]
-        public string? OnFailed { get; set; }
     }
 
     [Parameter]
