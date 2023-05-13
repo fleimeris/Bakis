@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestAPI.Domain", "RestAPI.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestAPI.Domain.Data", "RestAPI.Domain.Data\RestAPI.Domain.Data.csproj", "{DF33E3F7-0A67-4DA8-9774-84B004D99D5C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestAPI.Domain.Tests", "RestAPI.Domain.Tests\RestAPI.Domain.Tests.csproj", "{A73D733C-0508-40F5-8281-2955B75A1D6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{DF33E3F7-0A67-4DA8-9774-84B004D99D5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF33E3F7-0A67-4DA8-9774-84B004D99D5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF33E3F7-0A67-4DA8-9774-84B004D99D5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A73D733C-0508-40F5-8281-2955B75A1D6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A73D733C-0508-40F5-8281-2955B75A1D6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A73D733C-0508-40F5-8281-2955B75A1D6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A73D733C-0508-40F5-8281-2955B75A1D6E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
