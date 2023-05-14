@@ -4,6 +4,9 @@ public class Cookie
 {
     public string? Name { get; set; }
     public string? Domain { get; set; }
+    public string? Path { get; set; }
+    public float? Expires { get; set; }
+    public bool Session { get; set; }
 
     public override bool Equals(object? obj)
     {

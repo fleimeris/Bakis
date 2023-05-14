@@ -82,7 +82,10 @@ public class ScannerService : IScannerService
 
         var foundCookies = await page.Client.SendAsync<NetworkCookiesDto>("Network.getAllCookies");
         foreach (var foundCookie in foundCookies.Cookies)
+        {
+            Console.WriteLine(foundCookie.Expires);
             _capturedCookies.Add(foundCookie);
+        }
 
         var newUrlsToVisit = await GetAllPageUrls(page);
 

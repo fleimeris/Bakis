@@ -1,60 +1,68 @@
 ﻿@page "/"
+@using RestAPI.Domain.Data.Models
 
 <PageTitle>Scan a website</PageTitle>
+<MudStack>
+    <MudPaper>
+        <EditForm Model="@_request" OnValidSubmit="OnSuccessValidation">
+            <DataAnnotationsValidator/>
+            <MudGrid>
+                <MudItem xs="12" sm="12">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudTextField Label="Website URL" HelperText="Eg.: https://google.com"
+                                          @bind-Value="_request.WebsiteUrl" For="@(() => _request.WebsiteUrl)"/>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Scan website</MudButton>
+                            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" @onclick="Reset">Reset</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </MudPaper>
 
-<EditForm Model="@_request" OnValidSubmit="OnSuccessValidation">
-    <DataAnnotationsValidator/>
-    <MudGrid>
-        <MudItem xs="12" sm="12">
-            <MudCard>
-                <MudCardContent>
-                    <MudTextField Label="Website URL" HelperText="Eg.: https://google.com"
-                                  @bind-Value="_request.WebsiteUrl" For="@(() => _request.WebsiteUrl)"/>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Scan website</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" @onclick="Reset">Reset</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</EditForm>
-
-@if (_hasData)
-{
-    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Download" Color="Color.Info" @onclick="DownloadCsv">Download CSV</MudButton>
-    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Download" Color="Color.Info" @onclick="DownloadJson">Download JSON</MudButton>
-    <MudExpansionPanels>
-        <MudExpansionPanel Text="Cookies found">
-            @foreach (var cookie in _scanResult.Cookies)
-            {
-                <MudText Typo="Typo.body1">@cookie.Name @cookie.Domain</MudText>
-                @if (_scanResult.RulesFound.Any(x => x.Cookie != null && x.Cookie.Name == cookie.Name))
+    @if (_hasData)
+    {
+        <MudStack Spacing="1">
+            <MudPaper>
+                <MudText>Website scanned: @_request.WebsiteUrl</MudText>
+                <MudDivider/>
+                <MudText>Cookies found: @_scanResult!.Cookies.Count</MudText>
+                <MudDivider/>
+                @if (_scanResult.RulesFound.Any())
                 {
-                    <MudIcon Icon="@Icons.Material.Filled.Block" Color="Color.Error" Title="Cookie is not allowed"/>
+                    <MudText Color="Color.Error">Website might not have cookie banner or it is not functional</MudText>
                 }
                 else
                 {
-                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" Title="Cookie is allowed"/>
+                    <MudText Color="Color.Success">Website have cookie banner</MudText>
                 }
-                <MudDivider />
-            }
-        </MudExpansionPanel>
-        @*<MudExpansionPanel Text="Rules found">
-            @foreach (var foundRule in _scanResult.RulesFound.Where(x => x.Type == AuditRuleType.Element))
-            {
-                if (foundRule.Found)
-                {
-                    <MudText Typo="Typo.body1">@foundRule.Rule.OnSuccess</MudText><br/>
-                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" Title="Banner was found"/>
-                }
-                else
-                {
-                    <MudText Typo="Typo.body1">@foundRule.Rule.OnFailed</MudText><br/>
-                    <MudIcon Icon="@Icons.Material.Filled.Block" Color="Color.Error" Title="Banner was not found"/>
-                }
-                <MudDivider />
-            }
-        </MudExpansionPanel>*@
-    </MudExpansionPanels>
-}
+            </MudPaper>
+        </MudStack>
+        <MudStack Row="true">
+            <MudPaper>
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Download" Color="Color.Info" @onclick="DownloadCsv">Download CSV</MudButton>
+            </MudPaper>
+            <MudPaper>
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Download" Color="Color.Info" @onclick="DownloadJson">Download JSON</MudButton>
+            </MudPaper>
+        </MudStack>
+        <MudPaper>
+            <MudDataGrid T="Cookie" Items="@_scanResult!.Cookies" Filterable="false" Hideable="false">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Cookie list</MudText>
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn T="Cookie" TProperty="string" Property="x => x.Name" Title="Name"/>
+                    <PropertyColumn T="Cookie" TProperty="string" Property="x => x.Domain" Title="Domain"/>
+                    <PropertyColumn T="Cookie" TProperty="string" Property="x => x.Path" Title="Path"/>
+                    <PropertyColumn T="Cookie" TProperty="string" Property="x => HumanizeTimeSpan(x)" Title="Expiration"/>
+                    <PropertyColumn T="Cookie" TProperty="string" Property="x => IsCookieGood(x)" CellStyleFunc="CellStyleFunc" Title="Is cookie valid"/>
+                </Columns>
+            </MudDataGrid>
+        </MudPaper>
+    }
+
+</MudStack>

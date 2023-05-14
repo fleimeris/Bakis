@@ -2,10 +2,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 using System.Text;
 using Frontend.CustomValidators;
+using Humanizer;
+using Humanizer.Localisation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using MudBlazor;
+using MudBlazor.Utilities;
 using Newtonsoft.Json;
 using RestAPI.Domain.Data.Models;
 
@@ -102,5 +105,60 @@ public partial class Index
     {
         await _jsRuntime.InvokeVoidAsync("saveAsFile", "report.json", "application/json",
             Encoding.UTF8.GetBytes(_scanResultJson));
+    }
+
+    private string HumanizeTimeSpan(Cookie cookie)
+    {
+        if (cookie.Session || cookie.Expires < 1f)
+            return "Session";
+
+        try
+        {
+            var nowDate = DateTime.Now;
+            var parsedDate = DateTimeOffset.FromUnixTimeSeconds((long)cookie.Expires!).DateTime;
+            
+            Console.WriteLine(parsedDate);
+
+            return nowDate >= parsedDate
+                ? "Session"
+                : (parsedDate - nowDate).Humanize(maxUnit: TimeUnit.Year, minUnit: TimeUnit.Day);
+        }
+        catch
+        {
+            return "Session";
+        }
+    }
+
+    private string IsCookieGood(Cookie cookie)
+    {
+        try
+        {
+            if (!_scanResult!.RulesFound.Any(x => x.Cookie!.Name == cookie.Name))
+                return "Valid";
+        }
+        catch
+        {
+            return "Valid";
+        }
+
+        var auditRule = _scanResult.RulesFound.FirstOrDefault(x => x.Cookie!.Name == cookie.Name);
+
+        return auditRule!.Rule!.OnSuccess!;
+    }
+    
+    private string CellStyleFunc(Cookie cookie)
+    {
+        var theme = new MudTheme();
+        try
+        {
+            if (!_scanResult!.RulesFound.Any(x => x.Cookie!.Name == cookie.Name))
+                return $"background-color: {theme.Palette.Success.ToString(MudColorOutputFormats.Hex)}";
+        }
+        catch
+        {
+            return $"background-color: {theme.Palette.Success.ToString(MudColorOutputFormats.Hex)}";
+        }
+     
+        return $"background-color: {theme.Palette.Error.ToString(MudColorOutputFormats.Hex)}";
     }
 }
