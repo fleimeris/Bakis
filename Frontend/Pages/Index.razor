@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using RestAPI.Domain.Data.Models
+@using Humanizer
 
 <PageTitle>Scan a website</PageTitle>
 <MudStack>
@@ -62,6 +63,25 @@
                     <PropertyColumn T="Cookie" TProperty="string" Property="x => IsCookieGood(x)" CellStyleFunc="CellStyleFunc" Title="Is cookie valid"/>
                 </Columns>
             </MudDataGrid>
+        </MudPaper>
+        <MudPaper>
+            <MudTable Items="@_scanResult!.Policies" Bordered="false">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Possible liks to policies</MudText>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>Link</MudTh>
+                    <MudTh>Type</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Link">
+                        <MudLink Href="@context.Url">@context.Url</MudLink>
+                    </MudTd>
+                    <MudTd DataLabel="Type">
+                        @context.Type.Humanize(LetterCasing.Sentence)
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
         </MudPaper>
     }
 

@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using PuppeteerSharp;
+using RestAPI.Domain.Data.Enums;
 using RestAPI.Domain.Data.Models;
 using RestAPI.Domain.Services.ScannerService.Dtos;
 
@@ -88,6 +89,28 @@ public class ScannerService : IScannerService
         }
 
         var newUrlsToVisit = await GetAllPageUrls(page);
+
+        foreach (var maybePolicyUrl in newUrlsToVisit)
+        {
+            if (maybePolicyUrl.Contains("privacy", StringComparison.OrdinalIgnoreCase) ||
+                maybePolicyUrl.Contains("privatumo", StringComparison.OrdinalIgnoreCase))
+            {
+                _scanResult.Policies.Add(new Policy
+                {
+                    Url = maybePolicyUrl,
+                    Type = PredictedPolicyType.PrivacyPolicy
+                });
+            } else if (maybePolicyUrl.Contains("cookie", StringComparison.OrdinalIgnoreCase) ||
+                       maybePolicyUrl.Contains("slapuku", StringComparison.OrdinalIgnoreCase) ||
+                       maybePolicyUrl.Contains("slapukas", StringComparison.OrdinalIgnoreCase))
+            {
+                _scanResult.Policies.Add(new Policy
+                {
+                    Type = PredictedPolicyType.CookiePolicy,
+                    Url = maybePolicyUrl
+                });
+            }
+        }
 
         foreach (var urlToVisit in newUrlsToVisit)
             await RecursiveCrawl(page, urlToVisit);
