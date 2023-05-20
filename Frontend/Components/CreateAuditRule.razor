@@ -2,6 +2,7 @@
 @using System.Net.Http.Headers
 @using System.Text
 @using Newtonsoft.Json
+@using RestAPI.Domain.Data.Enums
 <MudDialog>
     <DialogContent>
         <EditForm Model="@_request" OnValidSubmit="OnSuccessValidation">
@@ -12,8 +13,12 @@
                         <MudCardContent>
                             <MudTextField Label="Identifier" HelperText="Cookie name (regex is enabled)"
                                           @bind-Value="_request.Identifier" For="@(() => _request.Identifier)"/>
-                            <MudTextField Label="On success message" HelperText="Message that is displayed whenever cookie is found"
-                                          @bind-Value="_request.OnSuccess" For="@(() => _request.OnSuccess)"/>
+                            <MudSelect HelperText="Cookie category" @bind-Value="_request.Category" For="@(() => _request.Category)">
+                                @foreach (CookieCategory category in Enum.GetValues(typeof(CookieCategory)))
+                                {
+                                    <MudSelectItem Value="@category">@category</MudSelectItem>
+                                }
+                            </MudSelect>
                         </MudCardContent>
                         <MudCardActions>
                             <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Class="ml-auto" OnClick="Cancel">Cancel</MudButton>
@@ -37,10 +42,8 @@
         [Required]
         [MinLength(1, ErrorMessage = "Identifier cannot be empty")]
         public string? Identifier { get; set; }
-
-        [Required]
-        [MinLength(1, ErrorMessage = "On success message cannot be empty")]
-        public string? OnSuccess { get; set; }
+        
+        public CookieCategory Category { get; set; }
     }
 
     private readonly CreateAuditRuleDto _request = new();

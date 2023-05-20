@@ -14,12 +14,11 @@
                         <MudCardContent>
                             <MudTextField Label="Identifier" HelperText="Cookie or web element (xpath) identifier"
                                           @bind-Value="_request.Identifier" For="@(() => _request.Identifier)"/>
-                            <MudSelect T="CookieCategory" HelperText="Cookie category" bind-Value="_request.Category"
-                                       For="@(() => _request.Category)">
-                                <MudSelectItem T="CookieCategory" Value="CookieCategory.Required">Required</MudSelectItem>
-                                <MudSelectItem T="CookieCategory" Value="CookieCategory.Functional">Functional</MudSelectItem>
-                                <MudSelectItem T="CookieCategory" Value="CookieCategory.Analytic">Analytic</MudSelectItem>
-                                <MudSelectItem T="CookieCategory" Value="CookieCategory.Marketing">Marketing</MudSelectItem>
+                            <MudSelect HelperText="Cookie category" @bind-Value="_request.Category" For="@(() => _request.Category)">
+                                @foreach (CookieCategory category in Enum.GetValues(typeof(CookieCategory)))
+                                {
+                                    <MudSelectItem Value="@category">@category</MudSelectItem>
+                                }
                             </MudSelect>
                         </MudCardContent>
                         <MudCardActions>
@@ -37,7 +36,9 @@
 {
     [CascadingParameter]
     MudDialogInstance MudDialog { get; set; }
-    [Inject] private ISnackbar _snackbar { get; set; }
+
+    [Inject]
+    private ISnackbar _snackbar { get; set; }
 
     public class UpdateAuditRuleDto
     {
@@ -45,14 +46,12 @@
         [MinLength(1, ErrorMessage = "Identifier cannot be empty")]
         public string? Identifier { get; set; }
 
-        [Required]
-        [MinLength(1, ErrorMessage = "On success message cannot be empty")]
         public CookieCategory Category { get; set; }
     }
 
     [Parameter]
     public UpdateAuditRuleDto _request { get; set; } = new();
-    
+
     [Parameter]
     public Guid _ruleId { get; set; }
 
@@ -78,7 +77,7 @@
         {
             _snackbar.Add($"Error occurred while updating rule: {e}", Severity.Error);
         }
-        
+
         MudDialog.Close();
     }
 
