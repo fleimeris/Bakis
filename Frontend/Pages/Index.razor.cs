@@ -26,7 +26,7 @@ public partial class Index
 {
     [Inject] private ISnackbar _snackbar { get; set; }
     [Inject] private IJSRuntime _jsRuntime { get; set; }
-    
+
     private ScanWebsiteRequest _request = new();
 
     private bool _hasData = false;
@@ -45,7 +45,7 @@ public partial class Index
         try
         {
             _snackbar.Add("Website is scanning.", Severity.Info);
-            
+
             var response = await httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
@@ -73,7 +73,7 @@ public partial class Index
         _scanResultJson = null;
         await InvokeAsync(StateHasChanged);
     }
-    
+
     private async Task DownloadCsv()
     {
         var httpClient = new HttpClient();
@@ -81,7 +81,8 @@ public partial class Index
         httpClient.Timeout = TimeSpan.FromHours(1);
 
         var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5254/api/v1/Download?what=0");
-        request.Content = new StringContent(JsonConvert.SerializeObject(_scanResult), Encoding.UTF8, "application/json");
+        request.Content =
+            new StringContent(JsonConvert.SerializeObject(_scanResult), Encoding.UTF8, "application/json");
 
         try
         {
@@ -117,7 +118,7 @@ public partial class Index
         {
             var nowDate = DateTime.Now;
             var parsedDate = DateTimeOffset.FromUnixTimeSeconds((long)cookie.Expires!).DateTime;
-            
+
             Console.WriteLine(parsedDate);
 
             return nowDate >= parsedDate
@@ -130,36 +131,12 @@ public partial class Index
         }
     }
 
-    private string IsCookieGood(Cookie cookie)
-    {
-        try
-        {
-            if (!_scanResult!.RulesFound.Any(x => x.Cookie!.Name == cookie.Name))
-                return "Valid";
-        }
-        catch
-        {
-            return "Valid";
-        }
-
-        var auditRule = _scanResult.RulesFound.FirstOrDefault(x => x.Cookie!.Name == cookie.Name);
-
-        return auditRule!.Rule!.Category == CookieCategory.Required ? "Valid" : auditRule!.Rule!.Category.ToString();
-    }
-    
     private string CellStyleFunc(Cookie cookie)
     {
         var theme = new MudTheme();
-        try
-        {
-            if (!_scanResult!.RulesFound.Any(x => x.Cookie!.Name == cookie.Name))
-                return $"background-color: {theme.Palette.Success.ToString(MudColorOutputFormats.Hex)}";
-        }
-        catch
-        {
-            return $"background-color: {theme.Palette.Success.ToString(MudColorOutputFormats.Hex)}";
-        }
-     
-        return $"background-color: {theme.Palette.Error.ToString(MudColorOutputFormats.Hex)}";
+        
+        return cookie.Category == CookieCategory.Required
+            ? $"background-color: {theme.Palette.Success.ToString(MudColorOutputFormats.Hex)}"
+            : $"background-color: {theme.Palette.Error.ToString(MudColorOutputFormats.Hex)}";
     }
 }

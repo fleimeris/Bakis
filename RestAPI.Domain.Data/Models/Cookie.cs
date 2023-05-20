@@ -1,3 +1,5 @@
+using RestAPI.Domain.Data.Enums;
+
 namespace RestAPI.Domain.Data.Models;
 
 public class Cookie
@@ -7,6 +9,7 @@ public class Cookie
     public string? Path { get; set; }
     public float? Expires { get; set; }
     public bool Session { get; set; }
+    public CookieCategory Category { get; set; } = CookieCategory.Required;
 
     public override bool Equals(object? obj)
     {

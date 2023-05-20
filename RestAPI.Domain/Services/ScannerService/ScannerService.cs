@@ -45,13 +45,10 @@ public class ScannerService : IScannerService
         {
             foreach (var capturedCookie in _capturedCookies)
             {
-                if(Regex.Matches(capturedCookie.Name!, auditRule.Identifier!).Count > 0)
-                    _scanResult.RulesFound.Add(new RulesFound
-                    {
-                        Cookie = capturedCookie,
-                        Rule = auditRule,
-                        RuleId = auditRule.Id,
-                    });
+                if (Regex.Matches(capturedCookie.Name!, auditRule.Identifier!).Count > 0)
+                {
+                    capturedCookie.Category = auditRule.Category;
+                }
             }
         }
 

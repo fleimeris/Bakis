@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using RestAPI.Domain.Data.Models
 @using Humanizer
+@using RestAPI.Domain.Data.Enums
 
 <PageTitle>Scan a website</PageTitle>
 <MudStack>
@@ -32,7 +33,7 @@
                 <MudDivider/>
                 <MudText>Cookies found: @_scanResult!.Cookies.Count</MudText>
                 <MudDivider/>
-                @if (_scanResult.RulesFound.Any())
+                @if (_scanResult.Cookies.Any(x => x.Category != CookieCategory.Required))
                 {
                     <MudText Color="Color.Error">Website might not have cookie banner or it is not functional</MudText>
                 }
@@ -60,7 +61,7 @@
                     <PropertyColumn T="Cookie" TProperty="string" Property="x => x.Domain" Title="Domain"/>
                     <PropertyColumn T="Cookie" TProperty="string" Property="x => x.Path" Title="Path"/>
                     <PropertyColumn T="Cookie" TProperty="string" Property="x => HumanizeTimeSpan(x)" Title="Expiration"/>
-                    <PropertyColumn T="Cookie" TProperty="string" Property="x => IsCookieGood(x)" CellStyleFunc="CellStyleFunc" Title="Is cookie valid"/>
+                    <PropertyColumn T="Cookie" TProperty="string" Property="x => x.Category.ToString()" CellStyleFunc="CellStyleFunc" Title="Cookie category"/>
                 </Columns>
             </MudDataGrid>
         </MudPaper>
