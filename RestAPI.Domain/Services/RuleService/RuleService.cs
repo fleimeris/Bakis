@@ -62,5 +62,7 @@ public class RuleService : IRuleService
 
         value.Identifier = identifier;
         value.Category = category;
+        
+        File.WriteAllText("db.json", JsonConvert.SerializeObject(rules));
     }
 }
