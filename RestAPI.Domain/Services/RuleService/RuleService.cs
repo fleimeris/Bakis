@@ -1,3 +1,4 @@
+using RestAPI.Domain.Data.Enums;
 using RestAPI.Domain.Data.Models;
 
 namespace RestAPI.Domain.Services.RuleService;
@@ -6,30 +7,14 @@ public class RuleService : IRuleService
 {
     private readonly List<AuditRule> _data = new();
 
-    public RuleService()
-    {
-        _data.Add(new AuditRule
-        {
-            Id = Guid.NewGuid(),
-            Identifier = "language",
-            OnSuccess = "Found marketing cookies",
-        });
-        _data.Add(new AuditRule
-        {
-            Id = Guid.NewGuid(),
-            Identifier = "/html/body/app-root/div/app-window-view/div/app-cookie-consent",
-            OnSuccess = "Privacypartners cookie banner was found",
-        });
-    }
-
-    public Guid Insert(string identifier, string? onSuccess = null)
+    public Guid Insert(string identifier, CookieCategory category)
     {
         var id = Guid.NewGuid();
         var data = new AuditRule
         {
             Id = id,
             Identifier = identifier,
-            OnSuccess = onSuccess
+            Category = category
         };
         
         _data.Add(data);
@@ -55,7 +40,7 @@ public class RuleService : IRuleService
         return _data;
     }
     
-    public void Update(Guid ruleId, string identifier, string? onSuccess = null)
+    public void Update(Guid ruleId, string identifier, CookieCategory category)
     {
         var value = _data.FirstOrDefault(x => x.Id == ruleId);
         
@@ -63,6 +48,6 @@ public class RuleService : IRuleService
             return;
         
         value.Identifier = identifier;
-        value.OnSuccess = onSuccess;
+        value.Category = category;
     }
 }

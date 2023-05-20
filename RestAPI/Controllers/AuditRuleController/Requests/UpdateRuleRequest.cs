@@ -1,12 +1,13 @@
 using System.Text.RegularExpressions;
 using FluentValidation;
+using RestAPI.Domain.Data.Enums;
 
 namespace RestAPI.Controllers.AuditRuleController.Requests;
 
 public class UpdateRuleRequest
 {
     public string? Identifier { get; set; }
-    public string? OnSuccess { get; set; }
+    public CookieCategory? Category { get; set; }
 }
 
 public class UpdateRuleRequestValidator : AbstractValidator<UpdateRuleRequest>
@@ -18,7 +19,7 @@ public class UpdateRuleRequestValidator : AbstractValidator<UpdateRuleRequest>
             .NotEmpty().WithMessage("Identifier cannot be empty")
             .Must(IsRegexValid).WithMessage("Regular expression is not valid");
         
-        RuleFor(x => x.OnSuccess)
+        RuleFor(x => x.Category)
             .NotNull().WithMessage("On success message cannot be null")
             .NotEmpty().WithMessage("On success message cannot be empty");
     }

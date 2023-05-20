@@ -2,6 +2,7 @@
 @using System.Net.Http.Headers
 @using System.Text
 @using Newtonsoft.Json
+@using RestAPI.Domain.Data.Enums
 
 <MudDialog>
     <DialogContent>
@@ -13,8 +14,13 @@
                         <MudCardContent>
                             <MudTextField Label="Identifier" HelperText="Cookie or web element (xpath) identifier"
                                           @bind-Value="_request.Identifier" For="@(() => _request.Identifier)"/>
-                            <MudTextField Label="On success message" HelperText="Message that is displayed whenever cookie or element is found"
-                                          @bind-Value="_request.OnSuccess" For="@(() => _request.OnSuccess)"/>
+                            <MudSelect T="CookieCategory" HelperText="Cookie category" bind-Value="_request.Category"
+                                       For="@(() => _request.Category)">
+                                <MudSelectItem T="CookieCategory" Value="CookieCategory.Required">Required</MudSelectItem>
+                                <MudSelectItem T="CookieCategory" Value="CookieCategory.Functional">Functional</MudSelectItem>
+                                <MudSelectItem T="CookieCategory" Value="CookieCategory.Analytic">Analytic</MudSelectItem>
+                                <MudSelectItem T="CookieCategory" Value="CookieCategory.Marketing">Marketing</MudSelectItem>
+                            </MudSelect>
                         </MudCardContent>
                         <MudCardActions>
                             <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Class="ml-auto" OnClick="Cancel">Cancel</MudButton>
@@ -41,7 +47,7 @@
 
         [Required]
         [MinLength(1, ErrorMessage = "On success message cannot be empty")]
-        public string? OnSuccess { get; set; }
+        public CookieCategory Category { get; set; }
     }
 
     [Parameter]

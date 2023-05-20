@@ -2,6 +2,7 @@ using FluentValidation;
 using PuppeteerSharp;
 using RestAPI.Controllers.AuditRuleController.Requests;
 using RestAPI.Controllers.ScanController.Requests;
+using RestAPI.Domain.Data.Enums;
 using RestAPI.Domain.Services.RuleService;
 using RestAPI.Domain.Services.ScannerService;
 
@@ -16,9 +17,9 @@ public class UnitTests
 
         var text = Guid.NewGuid().ToString();
         
-        ruleService.Insert(text, text);
-        
-        Assert.Contains(ruleService.GetAll(), x => x.Identifier == text && x.OnSuccess == text);
+        ruleService.Insert(text, CookieCategory.Required);
+
+        Assert.Contains(ruleService.GetAll(), x => x.Identifier == text && x.Category == CookieCategory.Required);
     }
 
     [Fact]
@@ -28,7 +29,7 @@ public class UnitTests
 
         var text = Guid.NewGuid().ToString();
         
-        var ruleId = ruleService.Insert(text, text);
+        var ruleId = ruleService.Insert(text, CookieCategory.Required);
         
         Assert.NotNull(ruleService.GetById(ruleId));
 
@@ -55,15 +56,15 @@ public class UnitTests
         var text = Guid.NewGuid().ToString();
         var newText = Guid.NewGuid().ToString();
         
-        var ruleId = ruleService.Insert(text, text);
+        var ruleId = ruleService.Insert(text, CookieCategory.Required);
 
-        ruleService.Update(ruleId, newText, newText);
+        ruleService.Update(ruleId, newText, CookieCategory.Analytic);
 
         var rule = ruleService.GetById(ruleId);
 
         Assert.NotNull(rule);
         Assert.Equal(newText, rule.Identifier);
-        Assert.Equal(newText, rule.OnSuccess);
+        Assert.Equal(CookieCategory.Analytic, rule.Category);
     }
 
     [Fact]
@@ -71,7 +72,7 @@ public class UnitTests
     {
         var ruleService = new RuleService();
         
-        ruleService.Update(Guid.Empty, string.Empty, string.Empty);
+        ruleService.Update(Guid.Empty, string.Empty, CookieCategory.Required);
     }
 
     [Fact]
@@ -80,7 +81,7 @@ public class UnitTests
         var request = new InsertRuleRequest
         {
             Identifier = "test",
-            OnSuccess = "test"
+            Category = CookieCategory.Required
         };
 
         var requestValidator = new InsertRuleRequestValidator();
@@ -96,7 +97,7 @@ public class UnitTests
         var request = new InsertRuleRequest
         {
             Identifier = "[",
-            OnSuccess = "test"
+            Category = CookieCategory.Required
         };
 
         var requestValidator = new InsertRuleRequestValidator();
@@ -112,7 +113,7 @@ public class UnitTests
         var request = new UpdateRuleRequest
         {
             Identifier = "test",
-            OnSuccess = "test"
+            Category = CookieCategory.Required
         };
 
         var requestValidator = new UpdateRuleRequestValidator();
@@ -128,7 +129,7 @@ public class UnitTests
         var request = new UpdateRuleRequest
         {
             Identifier = "[",
-            OnSuccess = "test"
+            Category = CookieCategory.Required
         };
 
         var requestValidator = new UpdateRuleRequestValidator();

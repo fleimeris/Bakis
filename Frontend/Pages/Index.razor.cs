@@ -10,6 +10,7 @@ using Microsoft.JSInterop;
 using MudBlazor;
 using MudBlazor.Utilities;
 using Newtonsoft.Json;
+using RestAPI.Domain.Data.Enums;
 using RestAPI.Domain.Data.Models;
 
 namespace Frontend.Pages;
@@ -143,7 +144,7 @@ public partial class Index
 
         var auditRule = _scanResult.RulesFound.FirstOrDefault(x => x.Cookie!.Name == cookie.Name);
 
-        return auditRule!.Rule!.OnSuccess!;
+        return auditRule!.Rule!.Category == CookieCategory.Required ? "Valid" : auditRule!.Rule!.Category.ToString();
     }
     
     private string CellStyleFunc(Cookie cookie)
