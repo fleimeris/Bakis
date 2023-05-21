@@ -134,6 +134,9 @@ public partial class Index
     private string CellStyleFunc(Cookie cookie)
     {
         var theme = new MudTheme();
+
+        if (cookie.Category == CookieCategory.Unknown)
+            return string.Empty;
         
         return cookie.Category == CookieCategory.Required
             ? $"background-color: {theme.Palette.Success.ToString(MudColorOutputFormats.Hex)}"

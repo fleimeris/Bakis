@@ -5,5 +5,6 @@ public enum CookieCategory
     Required,
     Functional,
     Analytic,
-    Marketing
+    Marketing,
+    Unknown
 }

@@ -9,7 +9,7 @@ public class Cookie
     public string? Path { get; set; }
     public float? Expires { get; set; }
     public bool Session { get; set; }
-    public CookieCategory Category { get; set; } = CookieCategory.Required;
+    public CookieCategory Category { get; set; } = CookieCategory.Unknown;
 
     public override bool Equals(object? obj)
     {
